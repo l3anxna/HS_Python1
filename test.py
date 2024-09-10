@@ -1,1 +1,1 @@
-print("Hello World")
+print("My name is Arm", "18 years old", "I love sleeping", sep = "\n")
