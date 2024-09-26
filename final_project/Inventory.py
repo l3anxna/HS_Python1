@@ -3,7 +3,7 @@ lending_records = {}
 
 def is_valid_item_name(item_name):
     """Check if the item name is valid (more than 3 characters and contains no numbers)."""
-    return item_name.isalpha() and len(item_name) > 3
+    return item_name.isalpha() and len(item_name) > 2
 
 def add_item():
     """Add an item to the inventory."""
@@ -12,21 +12,23 @@ def add_item():
         print("Invalid item name! Please enter a name with at least 3 characters and without numbers or special characters.")
         item_name = input("Enter the item name: ").strip().lower()  # Convert input to lowercase
 
-    try:
-        item_quantity = int(input("Enter the item quantity: "))
-        while item_quantity < 1:
-            print("Quantity must be a positive integer.")
+    while True:
+        try:
             item_quantity = int(input("Enter the item quantity: "))
+            while item_quantity < 1:
+                print("Quantity must be a positive integer.")
+                item_quantity = int(input("Enter the item quantity: "))
 
-        # Use lowercase version of item_name for storage
-        if item_name in inventory:
-            inventory[item_name] += item_quantity
-        else:
-            inventory[item_name] = item_quantity
+            # Use lowercase version of item_name for storage
+            if item_name in inventory:
+                inventory[item_name] += item_quantity
+            else:
+                inventory[item_name] = item_quantity
 
-        print(f"\nAdded {item_quantity} of {item_name} to the inventory.")
-    except ValueError:
-        print("Please enter a valid integer for quantity.")
+            print(f"\nAdded {item_quantity} of {item_name} to the inventory.")
+            break
+        except ValueError:
+            print("Please enter a valid integer for quantity.")
 
 def view_inventory():
     """View the current inventory in different formats."""
@@ -167,22 +169,40 @@ def view_lending_records():
 
 def remove_item():
     """Remove an item from the inventory."""
-    item_name = input("Enter the item name to remove: ")
+    item_name = input("Enter the item name to remove (or type 'exit' to cancel): ")
+
+    # Allow user to exit
+    if item_name.lower() == 'exit':
+        print("Removal canceled.")
+        return
 
     # Validate item name
     while not is_valid_item_name(item_name):
         print("Invalid item name! Please enter a name without numbers or special characters.")
-        item_name = input("Enter the item name to remove: ")
-    
+        item_name = input("Enter the item name to remove (or type 'exit' to cancel): ")
+        if item_name.lower() == 'exit':
+            print("Removal canceled.")
+            return
+
     if item_name in inventory:
         try:
-            item_quantity = int(input("Enter the quantity to remove: "))
+            item_quantity = int(input("Enter the quantity to remove (or type 'exit' to cancel): "))
+            if item_quantity < 1:
+                print("Quantity must be a positive integer.")
+                return
             
-            # Validate quantity
+            # Allow user to exit
+            if str(item_quantity).lower() == 'exit':
+                print("Removal canceled.")
+                return
+
             while item_quantity < 1:
                 print("Quantity must be a positive integer.")
-                item_quantity = int(input("Enter the quantity to remove: "))
-            
+                item_quantity = int(input("Enter the quantity to remove (or type 'exit' to cancel): "))
+                if str(item_quantity).lower() == 'exit':
+                    print("Removal canceled.")
+                    return
+
             if item_quantity > inventory[item_name]:
                 print(f"Cannot remove {item_quantity} of {item_name}. Only {inventory[item_name]} available.")
             elif item_quantity == inventory[item_name]:
@@ -194,7 +214,6 @@ def remove_item():
         
         except ValueError:
             print("Please enter a valid integer for quantity.")
-    
     else:
         print(f"{item_name} not found in the inventory.")
 
