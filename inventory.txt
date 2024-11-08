@@ -1,0 +1,2 @@
+cookie: 10
+blanket: 9
